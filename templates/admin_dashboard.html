@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard — VolunteerMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy: #1a1a2e;
+      --blue: #1d4ed8;
+      --blue-hover: #1e40af;
+      --blue-light: #eff6ff;
+      --green: #16a34a;
+      --green-light: #dcfce7;
+      --amber: #b45309;
+      --amber-light: #fef3c7;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --ink: #111827;
+      --body: #374151;
+      --subtle: #6b7280;
+      --rule: #e5e7eb;
+      --surface: #f9fafb;
+      --white: #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--surface);
+      color: var(--body);
+      -webkit-font-smoothing: antialiased;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: #1c1c2e;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      padding: 22px 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sidebar-logo a {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: white;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .sidebar-logo a span { color: #60a5fa; }
+
+    .sidebar-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.3);
+      padding: 20px 24px 8px;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 0 12px;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sidebar-nav a:hover { background: rgba(255,255,255,0.07); color: white; }
+    .sidebar-nav a.active { background: rgba(255,255,255,0.1); color: white; font-weight: 600; }
+
+    .sidebar-nav a svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    .sidebar-nav a.active svg, .sidebar-nav a:hover svg { opacity: 1; }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding: 16px 12px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .sidebar-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #1d4ed8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .sidebar-user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+      line-height: 1.2;
+    }
+
+    .sidebar-user-role {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .sidebar-logout {
+      display: block;
+      margin-top: 4px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sidebar-logout:hover { background: rgba(239,68,68,0.12); color: #fca5a5; }
+
+    /* ── MAIN ── */
+    .main {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* topbar */
+    .topbar {
+      background: white;
+      border-bottom: 1px solid var(--rule);
+      padding: 0 36px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar-date {
+      font-size: 13px;
+      color: var(--subtle);
+    }
+
+    /* content */
+    .content { padding: 32px 36px; flex: 1; }
+
+    /* page header */
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .page-header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .page-header p {
+      font-size: 13px;
+      color: var(--subtle);
+      margin-top: 3px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 9px 18px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-primary { background: var(--blue); color: white; }
+    .btn-primary:hover { background: var(--blue-hover); }
+
+    .btn-outline {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--rule);
+    }
+
+    .btn-outline:hover { border-color: #9ca3af; background: var(--surface); }
+
+    /* ── STAT CARDS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 20px 20px 18px;
+    }
+
+    .stat-card-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    .stat-card-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .stat-card-sub {
+      font-size: 12px;
+      color: var(--subtle);
+    }
+
+    .stat-card-sub .up { color: var(--green); font-weight: 600; }
+    .stat-card-sub .down { color: var(--red); font-weight: 600; }
+
+    /* ── TWO COL LAYOUT ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    /* ── TABLE CARD ── */
+    .card {
+      background: white;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+
+    .card-header a {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .card-header a:hover { text-decoration: underline; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--subtle);
+      padding: 10px 20px;
+      text-align: left;
+      border-bottom: 1px solid var(--rule);
+      background: var(--surface);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--rule);
+      transition: background 0.12s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fafbff; }
+
+    tbody td {
+      padding: 12px 20px;
+      font-size: 13px;
+      color: var(--body);
+    }
+
+    .td-name { font-weight: 600; color: var(--ink); }
+    .td-muted { color: var(--subtle); }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .badge-green { background: var(--green-light); color: var(--green); }
+    .badge-blue  { background: var(--blue-light);  color: var(--blue); }
+    .badge-amber { background: var(--amber-light); color: var(--amber); }
+    .badge-red   { background: var(--red-light);   color: var(--red); }
+
+    /* ── ACTIVITY FEED ── */
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .activity-item {
+      display: flex;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .activity-item:last-child { border-bottom: none; }
+
+    .activity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+
+    .activity-dot-green { background: var(--green); }
+    .activity-dot-blue  { background: var(--blue); }
+    .activity-dot-amber { background: #f59e0b; }
+
+    .activity-text {
+      font-size: 13px;
+      color: var(--body);
+      line-height: 1.5;
+    }
+
+    .activity-text strong { color: var(--ink); font-weight: 600; }
+
+    .activity-time {
+      font-size: 11px;
+      color: var(--subtle);
+      margin-top: 2px;
+    }
+
+    /* ── BOTTOM GRID ── */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    /* quick actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 16px 20px;
+    }
+
+    .quick-action {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 7px;
+      text-decoration: none;
+      transition: border-color 0.15s, background 0.15s;
+      cursor: pointer;
+    }
+
+    .quick-action:hover { border-color: #93c5fd; background: var(--blue-light); }
+
+    .quick-action-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .quick-action-sub {
+      font-size: 11px;
+      color: var(--subtle);
+    }
+
+    /* program list */
+    .program-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 20px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .program-item:last-child { border-bottom: none; }
+
+    .program-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+    .program-meta { font-size: 11px; color: var(--subtle); margin-top: 2px; }
+
+    .program-bar-wrap {
+      width: 80px;
+      height: 4px;
+      background: var(--rule);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 3px;
+    }
+
+    .program-bar {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--blue);
+    }
+
+    .program-pct { font-size: 11px; color: var(--subtle); text-align: right; }
+
+    @media (max-width: 1100px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .two-col { grid-template-columns: 1fr; }
+      .bottom-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .content { padding: 20px; }
+      .topbar { padding: 0 20px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <a href="/">Volunteer<span>MS</span></a>
+      <span style="display:inline-block;margin-top:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;background:#ef4444;color:white;padding:2px 8px;border-radius:3px;">Admin Panel</span>
+  </div>
+
+  <div class="sidebar-label">Main</div>
+  <nav class="sidebar-nav">
+    <a href="/admin_dashboard" class="active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="/manage_volunteers">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Volunteers
+    </a>
+    <a href="/programs">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Programs
+    </a>
+    <a href="/attendance">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Attendance
+    </a>
+    <a href="/reports">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Reports
+    </a>
+  </nav>
+
+  <div class="sidebar-label">Manage</div>
+  <nav class="sidebar-nav">
+    <a href="/create_program">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Create Program
+    </a>
+    <a href="/certificates">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+      Certificates
+    </a>
+    <a href="/feedback">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Feedback
+    </a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">AD</div>
+      <div>
+        <div class="sidebar-user-name">Admin</div>
+        <div class="sidebar-user-role">Administrator</div>
+      </div>
+    </div>
+    <a href="/logout" class="sidebar-logout">Sign out</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Dashboard</div>
+    <div class="topbar-right">
+      <span class="topbar-date" id="today-date"></span>
+      <a href="/create_program" class="btn btn-primary">+ New Program</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <h1>System Overview</h1>
+        <p>Here's what's happening across your volunteer programs.</p>
+      </div>
+      <a href="/reports" class="btn btn-outline">Export report</a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-label">Total Volunteers</div>
+        <div class="stat-card-num">{{ total_volunteers }}</div>
+        <div class="stat-card-sub">Registered volunteers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Active Programs</div>
+        <div class="stat-card-num">{{ total_programs }}</div>
+        <div class="stat-card-sub">Total programs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Hours Logged</div>
+        <div class="stat-card-num">{{ total_hours }}</div>
+        <div class="stat-card-sub">Across all programs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Attendance Rate</div>
+        <div class="stat-card-num">{{ attendance_rate }}%</div>
+        <div class="stat-card-sub">Overall attendance</div>
+      </div>
+    </div>
+
+    <!-- Table + Activity -->
+    <div class="two-col">
+
+      <!-- Recent volunteers table -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Recent Volunteers</h2>
+          <a href="/manage_volunteers">View all</a>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for v in recent_volunteers %}
+            <tr>
+              <td class="td-name">{{ v[0] }}</td>
+              <td class="td-muted">{{ v[1] }}</td>
+              <td>
+                {% if v[2] == 'approved' %}
+                  <span class="badge badge-green">Approved</span>
+                {% elif v[2] == 'rejected' %}
+                  <span class="badge badge-red">Rejected</span>
+                {% else %}
+                  <span class="badge badge-amber">Pending</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" style="text-align:center;color:var(--subtle);padding:20px;">No volunteers yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Recent attendance -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Recent Attendance</h2>
+        </div>
+        <div class="activity-list">
+          {% for a in recent_attendance %}
+          <div class="activity-item">
+            <div class="activity-dot activity-dot-{% if a[2] == 'Present' %}green{% else %}red{% endif %}"></div>
+            <div>
+              <div class="activity-text"><strong>{{ a[0] }}</strong> — {{ a[1] }} &middot; {{ a[2] }} &middot; {{ a[3] }} hrs</div>
+              <div class="activity-time">{{ a[4] }}</div>
+            </div>
+          </div>
+          {% else %}
+          <div style="padding:20px;text-align:center;color:var(--subtle);font-size:13px;">No attendance records yet</div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom grid -->
+    <div class="bottom-grid">
+
+      <!-- Quick actions -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Quick Actions</h2>
+        </div>
+        <div class="quick-actions">
+          <a href="/create_program" class="quick-action">
+            <div class="quick-action-label">Create Program</div>
+            <div class="quick-action-sub">Add a new volunteer program</div>
+          </a>
+          <a href="/manage_volunteers" class="quick-action">
+            <div class="quick-action-label">Manage Volunteers</div>
+            <div class="quick-action-sub">View and edit volunteer records</div>
+          </a>
+          <a href="/attendance" class="quick-action">
+            <div class="quick-action-label">Mark Attendance</div>
+            <div class="quick-action-sub">Record today's session</div>
+          </a>
+          <a href="/reports" class="quick-action">
+            <div class="quick-action-label">Generate Report</div>
+            <div class="quick-action-sub">Export participation data</div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Program capacity -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Program Capacity</h2>
+          <a href="/programs">View all</a>
+        </div>
+        {% for p in programs_capacity %}
+        {% set enrolled = enrollment_counts.get(p[0], 0) %}
+        {% set pct = (enrolled / p[2] * 100) | int if p[2] else 0 %}
+        <div class="program-item">
+          <div>
+            <div class="program-name">{{ p[1] }}</div>
+            <div class="program-meta">{{ enrolled }} / {{ p[2] if p[2] else '∞' }} volunteers</div>
+          </div>
+          <div>
+            <div class="program-bar-wrap">
+              <div class="program-bar" style="width:{{ pct }}%; {% if pct >= 90 %}background:#dc2626{% endif %}"></div>
+            </div>
+            <div class="program-pct">{{ pct }}%</div>
+          </div>
+        </div>
+        {% else %}
+        <div style="padding:20px;text-align:center;color:var(--subtle);font-size:13px;">No programs yet</div>
+        {% endfor %}
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const d = new Date();
+  document.getElementById('today-date').textContent = d.toLocaleDateString('en-US', {
+    weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+  });
+</script>
+
+</body>
+</html>

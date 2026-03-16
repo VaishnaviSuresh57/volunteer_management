@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register — VolunteerMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy: #0f1f3d;
+      --blue: #1d4ed8;
+      --blue-hover: #1e40af;
+      --green: #16a34a;
+      --ink: #111827;
+      --body: #374151;
+      --subtle: #6b7280;
+      --rule: #e5e7eb;
+      --surface: #f9fafb;
+      --white: #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--surface);
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* LEFT PANEL */
+    .left-panel {
+      background: var(--navy);
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100vh;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .left-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: white;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .left-logo span { color: #60a5fa; }
+
+    .left-content { margin: auto 0; padding: 40px 0; }
+
+    .left-content h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(26px, 3vw, 38px);
+      font-weight: 800;
+      color: white;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .left-content h2 span { color: #86efac; }
+
+    .left-content p {
+      color: rgba(255,255,255,0.5);
+      font-size: 14px;
+      line-height: 1.75;
+      max-width: 320px;
+    }
+
+    .left-checklist {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .left-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .left-check-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(134,239,172,0.15);
+      border: 1px solid rgba(134,239,172,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .left-check-dot::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #86efac;
+      border-radius: 50%;
+    }
+
+    .left-footer {
+      font-size: 12px;
+      color: rgba(255,255,255,0.25);
+    }
+
+    /* RIGHT PANEL */
+    .right-panel {
+      background: white;
+      padding: 48px 40px;
+      overflow-y: auto;
+    }
+
+    .right-inner {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 20px 0 40px;
+    }
+
+    .form-heading {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .form-subheading {
+      font-size: 14px;
+      color: var(--subtle);
+      margin-bottom: 32px;
+    }
+
+    /* section divider */
+    .form-section {
+      margin-bottom: 28px;
+    }
+
+    .form-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--subtle);
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 18px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group:last-child { margin-bottom: 0; }
+
+    label.field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .optional {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--subtle);
+      margin-left: 4px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: white;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      appearance: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(29,78,216,0.08);
+    }
+
+    input::placeholder { color: #d1d5db; }
+
+    /* custom select arrow */
+    .select-wrap { position: relative; }
+
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0; height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid var(--subtle);
+      pointer-events: none;
+    }
+
+    /* password wrap */
+    .pw-wrap { position: relative; }
+
+    .pw-wrap input { padding-right: 52px; }
+
+    .pw-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--subtle);
+      font-size: 13px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-weight: 500;
+      padding: 0;
+      transition: color 0.15s;
+    }
+
+    .pw-toggle:hover { color: var(--ink); }
+
+    /* password strength */
+    .pw-strength {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .pw-bar {
+      flex: 1;
+      height: 2px;
+      background: var(--rule);
+      border-radius: 2px;
+      transition: background 0.25s;
+    }
+
+    .pw-label {
+      font-size: 11px;
+      color: var(--subtle);
+      margin-top: 5px;
+    }
+
+    /* checkbox */
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      min-width: 15px;
+      margin-top: 2px;
+      accent-color: var(--blue);
+      cursor: pointer;
+    }
+
+    .checkbox-group span {
+      font-size: 13px;
+      color: var(--subtle);
+      line-height: 1.5;
+    }
+
+    .checkbox-group a {
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 11px;
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-submit:hover { background: var(--blue-hover); }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--subtle);
+    }
+
+    .form-footer a {
+      color: var(--blue);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .form-footer a:hover { text-decoration: underline; }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--subtle);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .back-link:hover { color: var(--ink); }
+
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      .left-panel { display: none; }
+      .right-panel { min-height: 100vh; padding: 32px 24px; }
+    }
+
+    @media (max-width: 420px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LEFT -->
+<div class="left-panel">
+  <a href="/" class="left-logo">Volunteer<span>MS</span></a>
+  <div class="left-content">
+    <h2>Start making a<br><span>difference</span><br>today</h2>
+    <p>Join our volunteer community and help programs run better across your city.</p>
+    <div class="left-checklist">
+      <div class="left-check">
+        <div class="left-check-dot"></div>
+        Free to join, no hidden fees
+      </div>
+      <div class="left-check">
+        <div class="left-check-dot"></div>
+        Browse and join programs instantly
+      </div>
+      <div class="left-check">
+        <div class="left-check-dot"></div>
+        Track your hours automatically
+      </div>
+      <div class="left-check">
+        <div class="left-check-dot"></div>
+        Download certificates of service
+      </div>
+    </div>
+  </div>
+  <div class="left-footer">© 2026 VolunteerMS</div>
+</div>
+
+<!-- RIGHT -->
+<div class="right-panel">
+  <div class="right-inner">
+    <div class="form-heading">Create account</div>
+    <div class="form-subheading">Fill in your details to get started</div>
+
+    {% if request.args.get('error') == 'email_taken' %}
+    <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#dc2626;font-weight:500;">
+      This email is already registered. <a href="/login" style="color:#dc2626;font-weight:700;">Sign in instead?</a>
+    </div>
+    {% elif request.args.get('error') == 'missing_fields' %}
+    <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#dc2626;font-weight:500;">
+      Please fill in all required fields.
+    </div>
+    {% endif %}
+
+    <form action="/register_user" method="POST">
+
+      <!-- Personal -->
+      <div class="form-section">
+        <div class="form-section-title">Personal information</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="field-label" for="fname">First name</label>
+            <input type="text" id="fname" name="first_name" placeholder="John" required/>
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="lname">Last name</label>
+            <input type="text" id="lname" name="last_name" placeholder="Doe" required/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="phone">Phone number <span class="optional">optional</span></label>
+          <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000"/>
+        </div>
+      </div>
+
+      <!-- Account -->
+      <div class="form-section">
+        <div class="form-section-title">Account details</div>
+        <div class="form-group">
+          <label class="field-label" for="email">Email address</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required/>
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="password">Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="password" name="password" placeholder="Create a password" oninput="checkStrength(this.value)" required/>
+            <button type="button" class="pw-toggle" onclick="togglePw()">Show</button>
+          </div>
+          <div class="pw-strength">
+            <div class="pw-bar" id="bar1"></div>
+            <div class="pw-bar" id="bar2"></div>
+            <div class="pw-bar" id="bar3"></div>
+            <div class="pw-bar" id="bar4"></div>
+          </div>
+          <div class="pw-label" id="pw-label">Use 8+ characters with letters and numbers</div>
+        </div>
+      </div>
+
+      <!-- Terms -->
+      <div class="checkbox-group">
+        <input type="checkbox" id="terms" name="terms" required/>
+        <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+      </div>
+
+      <button type="submit" class="btn-submit">Create account</button>
+    </form>
+
+    <div class="form-footer">
+      Already have an account? <a href="/login">Sign in</a>
+    </div>
+    <a href="/" class="back-link">← Back to home</a>
+  </div>
+</div>
+
+<script>
+  function togglePw() {
+    const input = document.getElementById('password');
+    const btn = document.querySelector('.pw-toggle');
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.textContent = 'Hide';
+    } else {
+      input.type = 'password';
+      btn.textContent = 'Show';
+    }
+  }
+
+  function checkStrength(val) {
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const colors = ['#ef4444', '#f59e0b', '#3b82f6', '#16a34a'];
+    const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+
+    for (let i = 1; i <= 4; i++) {
+      const bar = document.getElementById('bar' + i);
+      bar.style.background = i <= score ? colors[score - 1] : '#e5e7eb';
+    }
+
+    const lbl = document.getElementById('pw-label');
+    if (val.length > 0) {
+      lbl.textContent = labels[score - 1] || 'Too short';
+      lbl.style.color = colors[score - 1] || '#ef4444';
+    } else {
+      lbl.textContent = 'Use 8+ characters with letters and numbers';
+      lbl.style.color = '#6b7280';
+    }
+  }
+</script>
+
+</body>
+</html>

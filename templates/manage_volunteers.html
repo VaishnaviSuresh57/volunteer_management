@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Volunteers — VolunteerMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy: #1a1a2e;
+      --blue: #1d4ed8;
+      --blue-hover: #1e40af;
+      --blue-light: #eff6ff;
+      --green: #16a34a;
+      --green-light: #dcfce7;
+      --amber: #b45309;
+      --amber-light: #fef3c7;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --ink: #111827;
+      --body: #374151;
+      --subtle: #6b7280;
+      --rule: #e5e7eb;
+      --surface: #f9fafb;
+      --white: #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--surface);
+      color: var(--body);
+      -webkit-font-smoothing: antialiased;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: #1c1c2e;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo { padding: 22px 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-logo a { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: white; text-decoration: none; letter-spacing: -0.02em; }
+    .sidebar-logo a span { color: #60a5fa; }
+
+    .sidebar-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); padding: 20px 24px 8px; }
+
+    .sidebar-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
+    .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55); text-decoration: none; transition: background 0.15s, color 0.15s; }
+    .sidebar-nav a:hover { background: rgba(255,255,255,0.07); color: white; }
+    .sidebar-nav a.active { background: rgba(255,255,255,0.1); color: white; font-weight: 600; }
+    .sidebar-nav a svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
+    .sidebar-nav a.active svg, .sidebar-nav a:hover svg { opacity: 1; }
+
+    .sidebar-bottom { margin-top: auto; padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-user { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
+    .sidebar-avatar { width: 30px; height: 30px; border-radius: 50%; background: #1d4ed8; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
+    .sidebar-user-name { font-size: 13px; font-weight: 600; color: white; line-height: 1.2; }
+    .sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.35); }
+    .sidebar-logout { display: block; margin-top: 4px; padding: 8px 12px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.4); text-decoration: none; border-radius: 6px; transition: background 0.15s, color 0.15s; }
+    .sidebar-logout:hover { background: rgba(239,68,68,0.12); color: #fca5a5; }
+
+    .main { display: flex; flex-direction: column; min-height: 100vh; }
+
+    .topbar { background: white; border-bottom: 1px solid var(--rule); padding: 0 36px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+    .content { padding: 32px 36px; flex: 1; }
+
+    .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+    .page-header p { font-size: 13px; color: var(--subtle); margin-top: 3px; }
+
+    .stat-strip { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+    .stat-pill { background: white; border: 1px solid var(--rule); border-radius: 7px; padding: 12px 18px; display: flex; align-items: center; gap: 10px; }
+    .stat-pill-num { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--ink); line-height: 1; }
+    .stat-pill-label { font-size: 12px; color: var(--subtle); font-weight: 500; }
+    .stat-pill-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+
+    .search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 300px; }
+    .search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 13px; height: 13px; color: var(--subtle); pointer-events: none; }
+    .search-input { width: 100%; padding: 8px 12px 8px 32px; border: 1px solid var(--rule); border-radius: 6px; font-family: 'Instrument Sans', sans-serif; font-size: 13px; color: var(--ink); background: white; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+    .search-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(29,78,216,0.08); }
+    .search-input::placeholder { color: #d1d5db; }
+
+    .filter-select { padding: 8px 30px 8px 12px; border: 1px solid var(--rule); border-radius: 6px; font-family: 'Instrument Sans', sans-serif; font-size: 13px; color: var(--body); background: white; outline: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; cursor: pointer; }
+    .filter-select:focus { border-color: var(--blue); outline: none; }
+
+    .results-count { font-size: 13px; color: var(--subtle); margin-left: auto; }
+
+    .bulk-bar { display: none; align-items: center; gap: 12px; background: var(--blue-light); border: 1px solid #bfdbfe; border-radius: 7px; padding: 10px 16px; margin-bottom: 12px; font-size: 13px; font-weight: 600; color: var(--blue); }
+    .bulk-bar.visible { display: flex; }
+    .bulk-bar-count { flex: 1; }
+
+    .btn-bulk { padding: 6px 14px; border-radius: 5px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; font-family: 'Instrument Sans', sans-serif; transition: background 0.15s; }
+    .btn-bulk-approve { background: var(--green-light); color: var(--green); }
+    .btn-bulk-approve:hover { background: #bbf7d0; }
+    .btn-bulk-reject  { background: var(--red-light);   color: var(--red); }
+    .btn-bulk-reject:hover  { background: #fecaca; }
+
+    .table-card { background: white; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead th { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--subtle); padding: 11px 16px; text-align: left; border-bottom: 1px solid var(--rule); background: var(--surface); }
+    th.th-check, td.td-check { width: 44px; text-align: center; padding-right: 0; }
+    th.th-center, td.td-center { text-align: center; }
+
+    input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--blue); cursor: pointer; }
+
+    tbody tr { border-bottom: 1px solid var(--rule); transition: background 0.12s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fafbff; }
+    tbody tr.selected { background: #f0f6ff; }
+
+    tbody td { padding: 13px 16px; font-size: 13px; color: var(--body); vertical-align: middle; }
+    .td-name { font-weight: 600; color: var(--ink); }
+    .td-sub  { font-size: 11px; color: var(--subtle); margin-top: 2px; }
+    .td-muted { color: var(--subtle); }
+
+    .vol-cell { display: flex; align-items: center; gap: 10px; }
+    .vol-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--blue-light); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--blue); flex-shrink: 0; }
+
+    .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 4px; }
+    .badge-green  { background: var(--green-light);  color: var(--green); }
+    .badge-amber  { background: var(--amber-light);  color: var(--amber); }
+    .badge-red    { background: var(--red-light);    color: var(--red); }
+
+    .action-group { display: flex; gap: 6px; justify-content: center; align-items: center; }
+
+    .btn-approve { padding: 6px 12px; background: var(--green-light); color: var(--green); border: none; border-radius: 5px; font-family: 'Instrument Sans', sans-serif; font-size: 12px; font-weight: 600; text-decoration: none; cursor: pointer; transition: background 0.15s; white-space: nowrap; display: inline-block; }
+    .btn-approve:hover { background: #bbf7d0; }
+
+    .btn-reject { padding: 6px 12px; background: var(--surface); color: var(--subtle); border: 1px solid var(--rule); border-radius: 5px; font-family: 'Instrument Sans', sans-serif; font-size: 12px; font-weight: 600; text-decoration: none; cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; white-space: nowrap; display: inline-block; }
+    .btn-reject:hover { background: var(--red-light); border-color: #fca5a5; color: var(--red); }
+
+    .btn-view { padding: 6px 12px; background: white; color: var(--blue); border: 1px solid #bfdbfe; border-radius: 5px; font-family: 'Instrument Sans', sans-serif; font-size: 12px; font-weight: 600; text-decoration: none; cursor: pointer; transition: background 0.15s; white-space: nowrap; display: inline-block; }
+    .btn-view:hover { background: var(--blue-light); }
+
+    .empty-state { text-align: center; padding: 60px 20px; }
+    .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--ink); }
+    .empty-state p { font-size: 14px; color: var(--subtle); margin-top: 6px; }
+
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .content { padding: 20px; }
+      .topbar { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo"><a href="/">Volunteer<span>MS</span></a>
+      <span style="display:inline-block;margin-top:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;background:#ef4444;color:white;padding:2px 8px;border-radius:3px;">Admin Panel</span></div>
+
+  <div class="sidebar-label">Main</div>
+  <nav class="sidebar-nav">
+    <a href="/admin_dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="/manage_volunteers" class="active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Volunteers
+    </a>
+    <a href="/programs">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Programs
+    </a>
+    <a href="/attendance">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Attendance
+    </a>
+    <a href="/reports">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Reports
+    </a>
+  </nav>
+
+  <div class="sidebar-label">Manage</div>
+  <nav class="sidebar-nav">
+    <a href="/create_program">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Create Program
+    </a>
+    <a href="/certificates">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+      Certificates
+    </a>
+    <a href="/feedback">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Feedback
+    </a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">AD</div>
+      <div>
+        <div class="sidebar-user-name">Admin</div>
+        <div class="sidebar-user-role">Administrator</div>
+      </div>
+    </div>
+    <a href="/logout" class="sidebar-logout">Sign out</a>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Manage Volunteers</div>
+    <div class="topbar-right">
+      <a href="/admin_dashboard" style="font-size:13px;color:var(--subtle);text-decoration:none;">← Dashboard</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="page-header">
+      <div>
+        <h1>Volunteer Approval</h1>
+        <p>Review registrations and manage volunteer access.</p>
+      </div>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat-pill">
+        <div class="stat-pill-dot" style="background:var(--subtle)"></div>
+        <div>
+          <div class="stat-pill-num">{{ total }}</div>
+          <div class="stat-pill-label">Total</div>
+        </div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-pill-dot" style="background:var(--amber)"></div>
+        <div>
+          <div class="stat-pill-num">{{ pending }}</div>
+          <div class="stat-pill-label">Pending review</div>
+        </div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-pill-dot" style="background:var(--green)"></div>
+        <div>
+          <div class="stat-pill-num">{{ approved }}</div>
+          <div class="stat-pill-label">Approved</div>
+        </div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-pill-dot" style="background:var(--red)"></div>
+        <div>
+          <div class="stat-pill-num">{{ rejected }}</div>
+          <div class="stat-pill-label">Rejected</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" class="search-input" id="search-input" placeholder="Search by name or email..." oninput="filterTable()"/>
+      </div>
+      <select class="filter-select" id="status-filter" onchange="filterTable()">
+        <option value="">All statuses</option>
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+      <span class="results-count" id="results-count"></span>
+    </div>
+
+    <div class="bulk-bar" id="bulk-bar">
+      <span class="bulk-bar-count" id="bulk-count">0 selected</span>
+      <button class="btn-bulk btn-bulk-approve" onclick="bulkAction('approve')">Approve selected</button>
+      <button class="btn-bulk btn-bulk-reject"  onclick="bulkAction('reject')">Reject selected</button>
+    </div>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th class="th-check"><input type="checkbox" id="select-all" onchange="toggleSelectAll(this)"/></th>
+            <th>Volunteer</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th class="th-center">Status</th>
+            <th class="th-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="volunteers-tbody">
+
+          {% for v in volunteers %}
+          <tr data-status="{{ v[5] }}">
+            <td class="td-check"><input type="checkbox" class="row-check" onchange="updateBulkBar()"/></td>
+            <td>
+              <div class="vol-cell">
+                <div class="vol-avatar">{{ v[1][0].upper() }}</div>
+                <div><div class="td-name">{{ v[1] }}</div></div>
+              </div>
+            </td>
+            <td class="td-muted">{{ v[2] }}</td>
+            <td class="td-muted">{{ v[3] if v[3] else '—' }}</td>
+            <td class="td-center">
+              {% if v[5] == 'approved' %}<span class="badge badge-green">Approved</span>
+              {% elif v[5] == 'rejected' %}<span class="badge badge-red">Rejected</span>
+              {% else %}<span class="badge badge-amber">Pending</span>{% endif %}
+            </td>
+            <td class="td-center">
+              <div class="action-group">
+                {% if v[5] != 'approved' %}
+                  <a href="/approve/{{ v[0] }}" class="btn-approve">Approve</a>
+                {% endif %}
+                {% if v[5] != 'rejected' %}
+                  <a href="/reject/{{ v[0] }}" class="btn-reject">{% if v[5] == 'approved' %}Revoke{% else %}Reject{% endif %}</a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" style="text-align:center;color:var(--subtle);padding:24px;">No volunteers registered yet</td></tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+
+      <div class="empty-state" id="empty-state" style="display:none;">
+        <h3>No volunteers found</h3>
+        <p>Try adjusting your search or filter.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  function filterTable() {
+    const query  = document.getElementById('search-input').value.toLowerCase();
+    const status = document.getElementById('status-filter').value;
+    const rows   = document.querySelectorAll('#volunteers-tbody tr[data-status]');
+    let visible  = 0;
+    rows.forEach(row => {
+      const match = row.textContent.toLowerCase().includes(query) && (!status || row.getAttribute('data-status') === status);
+      row.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    document.getElementById('results-count').textContent = visible + ' volunteer' + (visible !== 1 ? 's' : '');
+    document.getElementById('empty-state').style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  function toggleSelectAll(cb) {
+    document.querySelectorAll('.row-check').forEach(c => { c.checked = cb.checked; c.closest('tr').classList.toggle('selected', cb.checked); });
+    updateBulkBar();
+  }
+
+  function updateBulkBar() {
+    const checked = document.querySelectorAll('.row-check:checked');
+    document.getElementById('bulk-count').textContent = checked.length + ' selected';
+    document.getElementById('bulk-bar').classList.toggle('visible', checked.length > 0);
+  }
+
+  function bulkAction(type) {
+    document.querySelectorAll('.row-check:checked').forEach(cb => {
+      const row = cb.closest('tr');
+      const badge = row.querySelector('.badge');
+      if (type === 'approve') { badge.className = 'badge badge-green'; badge.textContent = 'Approved'; row.setAttribute('data-status', 'Approved'); }
+      else { badge.className = 'badge badge-red'; badge.textContent = 'Rejected'; row.setAttribute('data-status', 'Rejected'); }
+      cb.checked = false;
+      row.classList.remove('selected');
+    });
+    updateBulkBar();
+    updateCounts();
+  }
+
+  function updateCounts() {
+    const rows = document.querySelectorAll('#volunteers-tbody tr[data-status]');
+    let p = 0, a = 0, r = 0;
+    rows.forEach(row => {

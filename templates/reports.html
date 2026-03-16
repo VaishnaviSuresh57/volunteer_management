@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reports — VolunteerMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy: #1a1a2e;
+      --blue: #1d4ed8;
+      --blue-hover: #1e40af;
+      --blue-light: #eff6ff;
+      --green: #16a34a;
+      --green-light: #dcfce7;
+      --amber: #b45309;
+      --amber-light: #fef3c7;
+      --ink: #111827;
+      --body: #374151;
+      --subtle: #6b7280;
+      --rule: #e5e7eb;
+      --surface: #f9fafb;
+      --white: #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--surface);
+      color: var(--body);
+      -webkit-font-smoothing: antialiased;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar { background: #1c1c2e; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sidebar-logo { padding: 22px 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-logo a { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: white; text-decoration: none; letter-spacing: -0.02em; }
+    .sidebar-logo a span { color: #60a5fa; }
+    .sidebar-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); padding: 20px 24px 8px; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
+    .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55); text-decoration: none; transition: background 0.15s, color 0.15s; }
+    .sidebar-nav a:hover { background: rgba(255,255,255,0.07); color: white; }
+    .sidebar-nav a.active { background: rgba(255,255,255,0.1); color: white; font-weight: 600; }
+    .sidebar-nav a svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
+    .sidebar-nav a.active svg, .sidebar-nav a:hover svg { opacity: 1; }
+    .sidebar-bottom { margin-top: auto; padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-user { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
+    .sidebar-avatar { width: 30px; height: 30px; border-radius: 50%; background: #1d4ed8; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
+    .sidebar-user-name { font-size: 13px; font-weight: 600; color: white; line-height: 1.2; }
+    .sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.35); }
+    .sidebar-logout { display: block; margin-top: 4px; padding: 8px 12px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.4); text-decoration: none; border-radius: 6px; transition: background 0.15s, color 0.15s; }
+    .sidebar-logout:hover { background: rgba(239,68,68,0.12); color: #fca5a5; }
+
+    /* MAIN */
+    .main { display: flex; flex-direction: column; min-height: 100vh; }
+    .topbar { background: white; border-bottom: 1px solid var(--rule); padding: 0 36px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+    .btn-print {
+      padding: 8px 18px;
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-print:hover { background: var(--blue-hover); }
+
+    .content { padding: 32px 36px; flex: 1; }
+
+    .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+    .page-header p { font-size: 13px; color: var(--subtle); margin-top: 3px; }
+
+    /* summary strip */
+    .summary-strip { display: flex; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
+    .summary-pill { background: white; border: 1px solid var(--rule); border-radius: 7px; padding: 14px 20px; }
+    .summary-pill-num { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--ink); line-height: 1; }
+    .summary-pill-label { font-size: 12px; color: var(--subtle); margin-top: 3px; }
+
+    /* tabs */
+    .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--rule); margin-bottom: 20px; }
+    .tab {
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--subtle);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      font-family: 'Instrument Sans', sans-serif;
+    }
+    .tab:hover { color: var(--ink); }
+    .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* filter bar */
+    .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 280px; }
+    .search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 13px; height: 13px; color: var(--subtle); pointer-events: none; }
+    .search-input { width: 100%; padding: 8px 12px 8px 32px; border: 1px solid var(--rule); border-radius: 6px; font-family: 'Instrument Sans', sans-serif; font-size: 13px; color: var(--ink); background: white; outline: none; transition: border-color 0.15s; }
+    .search-input:focus { border-color: var(--blue); }
+    .search-input::placeholder { color: #d1d5db; }
+    .results-count { font-size: 13px; color: var(--subtle); margin-left: auto; }
+
+    /* table */
+    .table-card { background: white; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--subtle); padding: 11px 20px; text-align: left; border-bottom: 1px solid var(--rule); background: var(--surface); }
+    th.th-right, td.td-right { text-align: right; }
+    th.th-center, td.td-center { text-align: center; }
+    tbody tr { border-bottom: 1px solid var(--rule); transition: background 0.12s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fafbff; }
+    tbody td { padding: 13px 20px; font-size: 13px; color: var(--body); vertical-align: middle; }
+    .td-name { font-weight: 600; color: var(--ink); }
+    .td-muted { color: var(--subtle); }
+
+    .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 4px; }
+    .badge-green { background: var(--green-light); color: var(--green); }
+    .badge-amber { background: var(--amber-light); color: var(--amber); }
+
+    .hours-num { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; color: var(--ink); }
+
+    /* attendance bar */
+    .att-bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .att-bar { width: 70px; height: 4px; background: var(--rule); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+    .att-fill { height: 100%; border-radius: 2px; background: var(--blue); }
+    .att-pct { font-size: 12px; color: var(--subtle); }
+
+    /* print */
+    @media print {
+      .sidebar, .topbar, .filter-bar, .tabs, .no-print { display: none !important; }
+      body { display: block; background: white; }
+      .content { padding: 0; }
+      .tab-panel { display: block !important; margin-bottom: 32px; }
+      .table-card { border: none; border-radius: 0; box-shadow: none; }
+    }
+
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .content { padding: 20px; }
+      .topbar { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo"><a href="/">Volunteer<span>MS</span></a>
+      <span style="display:inline-block;margin-top:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;background:#ef4444;color:white;padding:2px 8px;border-radius:3px;">Admin Panel</span></div>
+  <div class="sidebar-label">Main</div>
+  <nav class="sidebar-nav">
+    <a href="/admin_dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="/manage_volunteers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Volunteers</a>
+    <a href="/programs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Programs</a>
+    <a href="/attendance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Attendance</a>
+    <a href="/reports" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Reports</a>
+  </nav>
+  <div class="sidebar-label">Manage</div>
+  <nav class="sidebar-nav">
+    <a href="/create_program"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Create Program</a>
+    <a href="/certificates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Certificates</a>
+    <a href="/feedback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Feedback</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">AD</div>
+      <div><div class="sidebar-user-name">Admin</div><div class="sidebar-user-role">Administrator</div></div>
+    </div>
+    <a href="/logout" class="sidebar-logout">Sign out</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Reports</div>
+    <div class="topbar-right">
+      <button class="btn-print no-print" onclick="window.print()">Print report</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="page-header">
+      <div>
+        <h1>Volunteer Reports</h1>
+        <p>Participation and attendance data across all programs.</p>
+      </div>
+    </div>
+
+    <!-- Summary strip -->
+    <div class="summary-strip no-print">
+      <div class="summary-pill">
+        <div class="summary-pill-num">{{ volunteer_report | length }}</div>
+        <div class="summary-pill-label">Volunteers</div>
+      </div>
+      <div class="summary-pill">
+        <div class="summary-pill-num">{{ program_report | length }}</div>
+        <div class="summary-pill-label">Programs</div>
+      </div>
+      <div class="summary-pill">
+        <div class="summary-pill-num">
+          {{ volunteer_report | sum(attribute=2) if volunteer_report else 0 }}
+        </div>
+        <div class="summary-pill-label">Total hours</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs no-print">
+      <button class="tab active" onclick="switchTab('volunteers', this)">By Volunteer</button>
+      <button class="tab" onclick="switchTab('programs', this)">By Program</button>
+    </div>
+
+    <!-- Volunteer report tab -->
+    <div class="tab-panel active" id="tab-volunteers">
+      <div class="filter-bar no-print">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" placeholder="Search volunteers..." oninput="filterTable('vol-tbody', this.value)"/>
+        </div>
+        <span class="results-count" id="vol-count"></span>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Volunteer</th>
+              <th>Program</th>
+              <th class="th-center">Attendance</th>
+              <th class="th-right">Hours</th>
+            </tr>
+          </thead>
+          <tbody id="vol-tbody">
+            {% for row in volunteer_report %}
+            <tr>
+              <td class="td-name">{{ row[0] }}</td>
+              <td class="td-muted">{{ row[1] if row[1] else '—' }}</td>
+              <td class="td-center">
+                {% if row[4] and row[4] > 0 %}
+                  {% set pct = (row[3] / row[4] * 100) | round | int %}
+                  <div class="att-bar-wrap" style="justify-content:center;">
+                    <div class="att-bar"><div class="att-fill" style="width:{{ pct }}%"></div></div>
+                    <span class="att-pct">{{ pct }}%</span>
+                  </div>
+                {% else %}
+                  <span class="td-muted">—</span>
+                {% endif %}
+              </td>
+              <td class="td-right"><span class="hours-num">{{ row[2] }}</span></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" style="text-align:center;color:var(--subtle);padding:24px;font-size:13px;">No volunteer data yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Program report tab -->
+    <div class="tab-panel" id="tab-programs">
+      <div class="filter-bar no-print">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" placeholder="Search programs..." oninput="filterTable('prog-tbody', this.value)"/>
+        </div>
+        <span class="results-count" id="prog-count"></span>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Program</th>
+              <th class="th-center">Enrolled</th>
+              <th class="th-center">Attendance Rate</th>
+              <th class="th-right">Total Hours</th>
+            </tr>
+          </thead>
+          <tbody id="prog-tbody">
+            {% for row in program_report %}
+            <tr>
+              <td class="td-name">{{ row[0] }}</td>
+              <td class="td-center">{{ row[1] }}</td>
+              <td class="td-center">
+                {% if row[3] and row[1] and row[1] > 0 %}
+                  {% set pct = (row[3] / (row[1] * 5) * 100) | round | int %}
+                  <div class="att-bar-wrap" style="justify-content:center;">
+                    <div class="att-bar"><div class="att-fill" style="width:{{ [pct,100]|min }}%"></div></div>
+                    <span class="att-pct">{{ [pct,100]|min }}%</span>
+                  </div>
+                {% else %}
+                  <span class="td-muted">—</span>
+                {% endif %}
+              </td>
+              <td class="td-right"><span class="hours-num">{{ row[2] }}</span></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" style="text-align:center;color:var(--subtle);padding:24px;font-size:13px;">No program data yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function filterTable(tbodyId, query) {
+    const rows = document.querySelectorAll('#' + tbodyId + ' tr');
+    let visible = 0;
+    rows.forEach(row => {
+      const match = row.textContent.toLowerCase().includes(query.toLowerCase());
+      row.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const vRows = document.querySelectorAll('#vol-tbody tr').length;
+    const pRows = document.querySelectorAll('#prog-tbody tr').length;
+    const vc = document.getElementById('vol-count');
+    const pc = document.getElementById('prog-count');
+    if (vc) vc.textContent = vRows + ' volunteer' + (vRows !== 1 ? 's' : '');
+    if (pc) pc.textContent = pRows + ' program' + (pRows !== 1 ? 's' : '');
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — VolunteerMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy: #0f1f3d;
+      --blue: #1d4ed8;
+      --blue-hover: #1e40af;
+      --ink: #111827;
+      --body: #374151;
+      --subtle: #6b7280;
+      --rule: #e5e7eb;
+      --surface: #f9fafb;
+      --white: #ffffff;
+      --error: #dc2626;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--surface);
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* LEFT PANEL */
+    .left-panel {
+      background: var(--navy);
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100vh;
+    }
+
+    .left-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: white;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .left-logo span { color: #60a5fa; }
+
+    .left-content { margin-top: auto; margin-bottom: auto; padding: 40px 0; }
+
+    .left-content h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(28px, 3vw, 40px);
+      font-weight: 800;
+      color: white;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .left-content h2 span { color: #93c5fd; }
+
+    .left-content p {
+      color: rgba(255,255,255,0.55);
+      font-size: 15px;
+      line-height: 1.7;
+      max-width: 340px;
+    }
+
+    .left-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 40px;
+    }
+
+    .left-stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: white;
+      line-height: 1;
+    }
+
+    .left-stat-label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      margin-top: 3px;
+      font-weight: 500;
+    }
+
+    .left-footer {
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+    }
+
+    /* RIGHT PANEL */
+    .right-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 40px;
+      background: white;
+    }
+
+    .login-form-wrap {
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .form-heading {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .form-subheading {
+      font-size: 14px;
+      color: var(--subtle);
+      margin-bottom: 32px;
+    }
+
+    /* role tabs */
+    .role-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--rule);
+      border-radius: 7px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .role-tab input[type="radio"] { display: none; }
+
+    .role-tab label {
+      display: block;
+      text-align: center;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--subtle);
+      cursor: pointer;
+      background: var(--surface);
+      transition: background 0.15s, color 0.15s;
+      border-right: 1px solid var(--rule);
+    }
+
+    .role-tab:last-child label { border-right: none; }
+
+    .role-tab input[type="radio"]:checked + label {
+      background: var(--blue);
+      color: white;
+    }
+
+    /* form fields */
+    .form-group { margin-bottom: 18px; }
+
+    label.field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .field-row label { margin-bottom: 0; }
+
+    .field-row a {
+      font-size: 12px;
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .field-row a:hover { text-decoration: underline; }
+
+    .input-wrap { position: relative; }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: white;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      appearance: none;
+    }
+
+    input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(29,78,216,0.08);
+    }
+
+    input::placeholder { color: #d1d5db; }
+
+    .pw-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--subtle);
+      font-size: 13px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-weight: 500;
+      padding: 0;
+      transition: color 0.15s;
+    }
+
+    .pw-toggle:hover { color: var(--ink); }
+
+    .input-wrap input[type="password"],
+    .input-wrap input[type="text"] {
+      padding-right: 52px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 11px;
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 4px;
+    }
+
+    .btn-submit:hover { background: var(--blue-hover); }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--subtle);
+    }
+
+    .form-footer a {
+      color: var(--blue);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .form-footer a:hover { text-decoration: underline; }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--subtle);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .back-link:hover { color: var(--ink); }
+
+    /* responsive */
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      .left-panel { display: none; }
+      .right-panel { min-height: 100vh; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LEFT -->
+<div class="left-panel">
+  <a href="/" class="left-logo">Volunteer<span>MS</span></a>
+  <div class="left-content">
+    <h2>Welcome<br>back to<br><span>VolunteerMS</span></h2>
+    <p>Manage your programs, track volunteer hours, and measure community impact.</p>
+    <div class="left-stats">
+      <div>
+        <div class="left-stat-num">{{ total_volunteers }}</div>
+        <div class="left-stat-label">Volunteers</div>
+      </div>
+      <div>
+        <div class="left-stat-num">{{ total_hours }}</div>
+        <div class="left-stat-label">Hours logged</div>
+      </div>
+      <div>
+        <div class="left-stat-num">{{ total_programs }}</div>
+        <div class="left-stat-label">Programs</div>
+      </div>
+    </div>
+  </div>
+  <div class="left-footer">© 2026 VolunteerMS</div>
+</div>
+
+<!-- RIGHT -->
+<div class="right-panel">
+  <div class="login-form-wrap">
+    <div class="form-heading">Sign in</div>
+    <div class="form-subheading">Enter your credentials to access your account</div>
+
+    {% if request.args.get('success') == 'registered' %}
+    <div style="background:#dcfce7;border:1px solid #86efac;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#16a34a;font-weight:500;">
+      Account created! You can now sign in. Your account is pending admin approval.
+    </div>
+    {% elif request.args.get('error') == 'invalid' %}
+    <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#dc2626;font-weight:500;">
+      Invalid email or password. Please try again.
+    </div>
+    {% elif request.args.get('error') == 'pending' %}
+    <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#b45309;font-weight:500;">
+      Your account is pending admin approval.
+    </div>
+    {% elif request.args.get('error') == 'rejected' %}
+    <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#dc2626;font-weight:500;">
+      Your account has been rejected. Please contact admin.
+    </div>
+    {% endif %}
+
+    <form action="/login_user" method="POST">
+
+      <div class="role-tabs">
+        <div class="role-tab">
+          <input type="radio" name="role" id="role-volunteer" value="volunteer" checked/>
+          <label for="role-volunteer">Volunteer</label>
+        </div>
+        <div class="role-tab">
+          <input type="radio" name="role" id="role-admin" value="admin"/>
+          <label for="role-admin">Admin</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="field-label" for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required/>
+      </div>
+
+      <div class="form-group">
+        <div class="field-row">
+          <label class="field-label" for="password">Password</label>
+          <a href="/forgot-password">Forgot password?</a>
+        </div>
+        <div class="input-wrap">
+          <input type="password" id="password" name="password" placeholder="Enter your password" required/>
+          <button type="button" class="pw-toggle" onclick="togglePw()">Show</button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">Sign in</button>
+    </form>
+
+    <div class="form-footer">
+      Don't have an account? <a href="/register">Register free</a>
+    </div>
+    <a href="/" class="back-link">← Back to home</a>
+  </div>
+</div>
+
+<script>
+  function togglePw() {
+    const input = document.getElementById('password');
+    const btn = document.querySelector('.pw-toggle');
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.textContent = 'Hide';
+    } else {
+      input.type = 'password';
+      btn.textContent = 'Show';
+    }
+  }
+</script>
+
+</body>
+</html>

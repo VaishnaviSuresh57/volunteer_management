@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VolunteerMS — Volunteer Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy: #0f1f3d;
+      --blue: #1d4ed8;
+      --blue-hover: #1e40af;
+      --green: #16a34a;
+      --ink: #111827;
+      --body: #374151;
+      --subtle: #6b7280;
+      --rule: #e5e7eb;
+      --surface: #f9fafb;
+      --white: #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      color: var(--body);
+      background: var(--white);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      border-bottom: 1px solid var(--rule);
+      padding: 0 48px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--white);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 17px;
+      color: var(--navy);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo span { color: var(--blue); }
+
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--subtle);
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .nav-links a:hover { color: var(--ink); background: var(--surface); }
+
+    .nav-links .nav-cta {
+      background: var(--blue);
+      color: var(--white);
+      margin-left: 8px;
+    }
+
+    .nav-links .nav-cta:hover { background: var(--blue-hover); color: var(--white); }
+
+    /* HERO */
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 100px 48px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--blue);
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(34px, 4vw, 52px);
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 .accent { color: var(--blue); }
+
+    .hero p {
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--body);
+      max-width: 420px;
+      margin-bottom: 36px;
+    }
+
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 11px 24px;
+      background: var(--blue);
+      color: white;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+
+    .btn-primary:hover { background: var(--blue-hover); }
+
+    .btn-outline {
+      display: inline-block;
+      padding: 11px 24px;
+      background: white;
+      color: var(--ink);
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 6px;
+      border: 1px solid var(--rule);
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .btn-outline:hover { border-color: #9ca3af; background: var(--surface); }
+
+    /* hero panel */
+    .hero-panel {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      background: var(--navy);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .panel-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .panel-dot:nth-child(1) { background: #ef4444; }
+    .panel-dot:nth-child(2) { background: #f59e0b; }
+    .panel-dot:nth-child(3) { background: #22c55e; }
+
+    .panel-title {
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      font-family: 'Instrument Sans', sans-serif;
+      margin-left: 8px;
+      font-weight: 500;
+    }
+
+    .panel-body { padding: 20px 18px; }
+
+    .panel-stat-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .panel-stat {
+      background: white;
+      border: 1px solid var(--rule);
+      border-radius: 7px;
+      padding: 12px 10px;
+      text-align: center;
+    }
+
+    .panel-stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .panel-stat-label { font-size: 11px; color: var(--subtle); margin-top: 3px; }
+
+    .panel-list { display: flex; flex-direction: column; gap: 7px; }
+
+    .panel-row {
+      background: white;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 10px 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-row-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+    .panel-row-sub { font-size: 11px; color: var(--subtle); margin-top: 1px; }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .badge-green { background: #dcfce7; color: #15803d; }
+    .badge-blue  { background: #dbeafe; color: #1d4ed8; }
+    .badge-amber { background: #fef3c7; color: #b45309; }
+
+    /* FEATURES */
+    .features {
+      border-top: 1px solid var(--rule);
+      background: var(--surface);
+      padding: 80px 48px;
+    }
+
+    .features-inner { max-width: 1100px; margin: 0 auto; }
+
+    .section-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--subtle);
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      margin-bottom: 48px;
+      line-height: 1.15;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .feature-cell {
+      background: white;
+      padding: 28px 24px;
+      transition: background 0.15s;
+    }
+
+    .feature-cell:hover { background: #f0f7ff; }
+
+    .feature-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--blue);
+      margin-bottom: 14px;
+      opacity: 0.5;
+    }
+
+    .feature-cell h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .feature-cell p { font-size: 13px; color: var(--subtle); line-height: 1.65; }
+
+    /* HOW IT WORKS */
+    .how { padding: 80px 48px; max-width: 1100px; margin: 0 auto; }
+
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .how-step-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 38px;
+      font-weight: 800;
+      color: var(--rule);
+      line-height: 1;
+      margin-bottom: 12px;
+      letter-spacing: -0.03em;
+    }
+
+    .how-step h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .how-step p { font-size: 13px; color: var(--subtle); line-height: 1.65; }
+
+    /* CTA */
+    .cta {
+      border-top: 1px solid var(--rule);
+      padding: 80px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1100px;
+      margin: 0 auto;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .cta h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      max-width: 480px;
+      line-height: 1.2;
+    }
+
+    .cta-actions { display: flex; gap: 12px; flex-shrink: 0; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    footer p { font-size: 13px; color: var(--subtle); }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--subtle);
+      text-decoration: none;
+      margin-left: 20px;
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover { color: var(--ink); }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; padding: 60px 24px; gap: 40px; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .how-grid { grid-template-columns: 1fr 1fr; }
+      nav, .features, .cta, footer { padding-left: 24px; padding-right: 24px; }
+    }
+
+    @media (max-width: 580px) {
+      .features-grid, .how-grid { grid-template-columns: 1fr; }
+      .cta { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">Volunteer<span>MS</span></a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/login">Login</a>
+    <a href="/register" class="nav-cta">Register</a>
+  </div>
+</nav>
+
+<section>
+  <div class="hero">
+    <div>
+      <div class="hero-tag">Volunteer Management</div>
+      <h1>Run better<br><span class="accent">volunteer</span><br>programs</h1>
+      <p>Track participation, manage programs, and generate reports — without the spreadsheet chaos.</p>
+      <div class="hero-actions">
+        <a href="/register" class="btn-primary">Get started free</a>
+        <a href="/login" class="btn-outline">Sign in</a>
+      </div>
+    </div>
+    <div class="hero-panel">
+      <div class="panel-header">
+        <div class="panel-dot"></div>
+        <div class="panel-dot"></div>
+        <div class="panel-dot"></div>
+        <span class="panel-title">Dashboard overview</span>
+      </div>
+      <div class="panel-body">
+        <div class="panel-stat-row">
+          <div class="panel-stat">
+            <div class="panel-stat-num">{{ total_volunteers }}</div>
+            <div class="panel-stat-label">Volunteers</div>
+          </div>
+          <div class="panel-stat">
+            <div class="panel-stat-num">{{ total_programs }}</div>
+            <div class="panel-stat-label">Programs</div>
+          </div>
+          <div class="panel-stat">
+            <div class="panel-stat-num">{{ total_hours }}</div>
+            <div class="panel-stat-label">Hours</div>
+          </div>
+        </div>
+        <div class="panel-list">
+          {% for p in recent_programs %}
+          <div class="panel-row">
+            <div>
+              <div class="panel-row-name">{{ p[0] }}</div>
+              <div class="panel-row-sub">{{ p[1] }} volunteers enrolled</div>
+            </div>
+            <span class="badge badge-blue">Active</span>
+          </div>
+          {% else %}
+          <div style="padding:14px;text-align:center;color:var(--subtle);font-size:13px;">No programs yet</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="features-inner">
+    <div class="section-eyebrow">Features</div>
+    <div class="section-title">Everything to run a volunteer program</div>
+    <div class="features-grid">
+      <div class="feature-cell">
+        <div class="feature-num">01</div>
+        <h3>Program Management</h3>
+        <p>Create programs, set capacity limits, manage schedules, and assign coordinators.</p>
+      </div>
+      <div class="feature-cell">
+        <div class="feature-num">02</div>
+        <h3>Volunteer Tracking</h3>
+        <p>Monitor hours, participation history, and volunteer performance in one place.</p>
+      </div>
+      <div class="feature-cell">
+        <div class="feature-num">03</div>
+        <h3>Attendance Tracking</h3>
+        <p>Mark attendance per session, flag absences, and keep accurate records automatically.</p>
+      </div>
+      <div class="feature-cell">
+        <div class="feature-num">04</div>
+        <h3>Reports</h3>
+        <p>Export printable participation reports for audits, grants, and stakeholders.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="how">
+    <div class="section-eyebrow">How it works</div>
+    <div class="section-title">Up and running in minutes</div>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-step-num">01</div>
+        <h4>Create an account</h4>
+        <p>Register as a volunteer or admin. No credit card needed.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">02</div>
+        <h4>Browse programs</h4>
+        <p>Find volunteer programs that match your skills and availability.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">03</div>
+        <h4>Show up</h4>
+        <p>Attend sessions and get your hours logged automatically.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">04</div>
+        <h4>Track your impact</h4>
+        <p>View your history and download certificates of service.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="border-top: 1px solid var(--rule);">
+  <div class="cta">
+    <h2>Ready to simplify your volunteer management?</h2>
+    <div class="cta-actions">
+      <a href="/register" class="btn-primary">Register now</a>
+      <a href="/login" class="btn-outline">Sign in</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 VolunteerMS. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="/">Home</a>
+    <a href="/login">Login</a>
+    <a href="/register">Register</a>
+  </div>
+</footer>
+
+</body>
+</html>

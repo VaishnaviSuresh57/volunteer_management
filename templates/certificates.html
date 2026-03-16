@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Certificate — VolunteerMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy: #0f1f3d;
+      --blue: #1d4ed8;
+      --blue-light: #eff6ff;
+      --green: #16a34a;
+      --ink: #111827;
+      --body: #374151;
+      --subtle: #6b7280;
+      --rule: #e5e7eb;
+      --surface: #f9fafb;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--surface);
+      color: var(--body);
+      -webkit-font-smoothing: antialiased;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar { background: var(--navy); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sidebar-logo { padding: 22px 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-logo a { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: white; text-decoration: none; letter-spacing: -0.02em; }
+    .sidebar-logo a span { color: #60a5fa; }
+    .sidebar-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); padding: 20px 24px 8px; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
+    .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55); text-decoration: none; transition: background 0.15s, color 0.15s; }
+    .sidebar-nav a:hover { background: rgba(255,255,255,0.07); color: white; }
+    .sidebar-nav a.active { background: rgba(255,255,255,0.1); color: white; font-weight: 600; }
+    .sidebar-nav a svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
+    .sidebar-nav a.active svg, .sidebar-nav a:hover svg { opacity: 1; }
+    .sidebar-bottom { margin-top: auto; padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-user { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
+    .sidebar-avatar { width: 30px; height: 30px; border-radius: 50%; background: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
+    .sidebar-user-name { font-size: 13px; font-weight: 600; color: white; line-height: 1.2; }
+    .sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.35); }
+    .sidebar-logout { display: block; margin-top: 4px; padding: 8px 12px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.4); text-decoration: none; border-radius: 6px; transition: background 0.15s, color 0.15s; }
+    .sidebar-logout:hover { background: rgba(239,68,68,0.12); color: #fca5a5; }
+
+    /* MAIN */
+    .main { display: flex; flex-direction: column; min-height: 100vh; }
+    .topbar { background: white; border-bottom: 1px solid var(--rule); padding: 0 36px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+    .content { padding: 40px 36px; flex: 1; display: flex; flex-direction: column; align-items: center; }
+
+    .page-header { width: 100%; max-width: 720px; margin-bottom: 28px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+    .page-header p { font-size: 13px; color: var(--subtle); margin-top: 3px; }
+
+    .btn-print { padding: 9px 18px; background: var(--blue); color: white; border: none; border-radius: 6px; font-family: 'Instrument Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; text-decoration: none; display: inline-block; }
+    .btn-print:hover { background: #1e40af; }
+
+    /* CERTIFICATE */
+    .cert-wrapper { width: 100%; max-width: 720px; }
+
+    .certificate {
+      background: white;
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* top colour strip */
+    .cert-strip {
+      height: 8px;
+      background: linear-gradient(90deg, var(--navy) 0%, var(--blue) 100%);
+    }
+
+    .cert-body { padding: 52px 60px 44px; text-align: center; }
+
+    .cert-org {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--blue);
+      margin-bottom: 28px;
+    }
+
+    .cert-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.15;
+      margin-bottom: 24px;
+    }
+
+    .cert-text {
+      font-size: 15px;
+      color: var(--subtle);
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+
+    .cert-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-style: italic;
+      color: var(--ink);
+      margin: 16px 0;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--rule);
+      display: inline-block;
+      min-width: 280px;
+    }
+
+    .cert-program {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--navy);
+      margin: 20px 0 6px;
+    }
+
+    .cert-hours {
+      font-size: 13px;
+      color: var(--subtle);
+      margin-bottom: 32px;
+    }
+
+    .cert-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--rule);
+      text-align: left;
+    }
+
+    .cert-sig-line {
+      width: 160px;
+      height: 1px;
+      background: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .cert-sig-label { font-size: 12px; color: var(--subtle); font-weight: 500; }
+    .cert-sig-name  { font-size: 13px; font-weight: 600; color: var(--ink); margin-top: 2px; }
+
+    .cert-seal {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 2px solid var(--navy);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cert-seal-text { font-family: 'Syne', sans-serif; font-size: 7px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--navy); text-align: center; line-height: 1.5; }
+
+    .cert-date-block { text-align: right; }
+
+    /* print rules */
+    @media print {
+      body { display: block; background: white; }
+      .sidebar, .topbar, .page-header, .no-print { display: none !important; }
+      .content { padding: 0; display: block; }
+      .certificate { border: none; border-radius: 0; box-shadow: none; }
+      .cert-body { padding: 48px 60px; }
+    }
+
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .content { padding: 24px 16px; }
+      .topbar { padding: 0 20px; }
+      .cert-body { padding: 32px 24px; }
+      .cert-footer { flex-direction: column; gap: 20px; align-items: center; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo"><a href="/">Volunteer<span>MS</span></a>
+      <span style="display:inline-block;margin-top:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;background:#16a34a;color:white;padding:2px 8px;border-radius:3px;">Volunteer Portal</span></div>
+  <div class="sidebar-label">My Space</div>
+  <nav class="sidebar-nav">
+    <a href="/volunteer_dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="/programs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Programs</a>
+    <a href="/attendance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>My Attendance</a>
+    <a href="/activity_history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Activity History</a>
+  </nav>
+  <div class="sidebar-label">Rewards</div>
+  <nav class="sidebar-nav">
+    <a href="/certificates" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Certificates</a>
+    <a href="/feedback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Feedback</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">{{ volunteer_name[0].upper() if volunteer_name else 'V' }}</div>
+      <div><div class="sidebar-user-name">{{ volunteer_name }}</div><div class="sidebar-user-role">Volunteer</div></div>
+    </div>
+    <a href="/logout" class="sidebar-logout">Sign out</a>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Certificates</div>
+    <div class="topbar-right">
+      <a href="/volunteer_dashboard" style="font-size:13px;color:var(--subtle);text-decoration:none;">← Dashboard</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    {% if certs %}
+      {% for c in certs %}
+      <div class="page-header no-print" style="margin-bottom:16px;">
+        <div>
+          <h1>Participation Certificate</h1>
+          <p>{{ c[0] }} · {{ c[1] }} hours</p>
+        </div>
+        <button class="btn-print" onclick="window.print()">Print certificate</button>
+      </div>
+
+      <div class="cert-wrapper" style="margin-bottom:40px;">
+        <div class="certificate">
+          <div class="cert-strip"></div>
+          <div class="cert-body">
+            <div class="cert-org">VolunteerMS</div>
+            <div class="cert-title">Certificate of Participation</div>
+            <div class="cert-text">This certificate is proudly awarded to</div>
+            <div class="cert-name">{{ volunteer_name }}</div>
+            <div class="cert-text" style="margin-top:16px;">for successfully completing</div>
+            <div class="cert-program">{{ c[0] }}</div>
+            <div class="cert-hours">{{ c[1] }} hours of volunteer service · Completed {{ c[2] }}</div>
+            <div class="cert-footer">
+              <div>
+                <div class="cert-sig-line"></div>
+                <div class="cert-sig-label">Program Coordinator</div>
+                <div class="cert-sig-name">VolunteerMS Admin</div>
+              </div>
+              <div class="cert-seal">
+                <div class="cert-seal-text">Volunteer<br>MS<br>Certified</div>
+              </div>
+              <div class="cert-date-block">
+                <div class="cert-sig-line" style="margin-left:auto;"></div>
+                <div class="cert-sig-label">Date issued</div>
+                <div class="cert-sig-name">{{ c[2] }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    {% else %}
+      <div style="text-align:center;padding:80px 20px;">
+        <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--ink);margin-bottom:8px;">No certificates yet</div>
+        <div style="font-size:14px;color:var(--subtle);">Complete volunteer hours in a program to earn your certificate.</div>
+        <a href="/programs" style="display:inline-block;margin-top:20px;padding:10px 24px;background:var(--blue);color:white;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;">Browse Programs</a>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
+</body>
+</html>

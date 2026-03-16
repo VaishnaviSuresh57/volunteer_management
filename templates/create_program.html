@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Program — VolunteerMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy: #1a1a2e;
+      --blue: #1d4ed8;
+      --blue-hover: #1e40af;
+      --blue-light: #eff6ff;
+      --green: #16a34a;
+      --green-light: #dcfce7;
+      --ink: #111827;
+      --body: #374151;
+      --subtle: #6b7280;
+      --rule: #e5e7eb;
+      --surface: #f9fafb;
+      --white: #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--surface);
+      color: var(--body);
+      -webkit-font-smoothing: antialiased;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar { background: #1c1c2e; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sidebar-logo { padding: 22px 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-logo a { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: white; text-decoration: none; letter-spacing: -0.02em; }
+    .sidebar-logo a span { color: #60a5fa; }
+    .sidebar-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); padding: 20px 24px 8px; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
+    .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55); text-decoration: none; transition: background 0.15s, color 0.15s; }
+    .sidebar-nav a:hover { background: rgba(255,255,255,0.07); color: white; }
+    .sidebar-nav a.active { background: rgba(255,255,255,0.1); color: white; font-weight: 600; }
+    .sidebar-nav a svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
+    .sidebar-nav a.active svg, .sidebar-nav a:hover svg { opacity: 1; }
+    .sidebar-bottom { margin-top: auto; padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-user { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
+    .sidebar-avatar { width: 30px; height: 30px; border-radius: 50%; background: #1d4ed8; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
+    .sidebar-user-name { font-size: 13px; font-weight: 600; color: white; line-height: 1.2; }
+    .sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.35); }
+    .sidebar-logout { display: block; margin-top: 4px; padding: 8px 12px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.4); text-decoration: none; border-radius: 6px; transition: background 0.15s, color 0.15s; }
+    .sidebar-logout:hover { background: rgba(239,68,68,0.12); color: #fca5a5; }
+
+    /* MAIN */
+    .main { display: flex; flex-direction: column; min-height: 100vh; }
+    .topbar { background: white; border-bottom: 1px solid var(--rule); padding: 0 36px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+    .content { padding: 40px 36px; flex: 1; display: flex; justify-content: center; }
+
+    .form-wrap { width: 100%; max-width: 560px; }
+
+    .page-header { margin-bottom: 28px; }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+    .page-header p { font-size: 13px; color: var(--subtle); margin-top: 4px; }
+
+    .form-card { background: white; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+
+    .form-section { padding: 24px 28px; border-bottom: 1px solid var(--rule); }
+    .form-section:last-of-type { border-bottom: none; }
+
+    .form-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--subtle); margin-bottom: 18px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .optional { font-size: 11px; font-weight: 400; color: var(--subtle); margin-left: 4px; }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    input[type="time"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: white;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      appearance: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(29,78,216,0.08);
+    }
+
+    input::placeholder, textarea::placeholder { color: #d1d5db; }
+
+    textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+
+    .select-wrap { position: relative; }
+    .select-wrap::after { content: ''; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--subtle); pointer-events: none; }
+    .select-wrap select { padding-right: 30px; }
+
+    .char-count { font-size: 11px; color: var(--subtle); text-align: right; margin-top: 4px; }
+
+    .form-footer { padding: 20px 28px; background: var(--surface); border-top: 1px solid var(--rule); display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+
+    .btn-cancel { padding: 10px 20px; background: white; color: var(--body); border: 1px solid var(--rule); border-radius: 6px; font-family: 'Instrument Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; transition: border-color 0.15s, background 0.15s; }
+    .btn-cancel:hover { border-color: #9ca3af; background: var(--surface); }
+
+    .btn-submit { padding: 10px 24px; background: var(--blue); color: white; border: none; border-radius: 6px; font-family: 'Instrument Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .btn-submit:hover { background: var(--blue-hover); }
+
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .content { padding: 24px 20px; }
+      .topbar { padding: 0 20px; }
+      .form-row { grid-template-columns: 1fr; }
+      .form-section { padding: 20px; }
+      .form-footer { padding: 16px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo"><a href="/">Volunteer<span>MS</span></a>
+      <span style="display:inline-block;margin-top:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;background:#ef4444;color:white;padding:2px 8px;border-radius:3px;">Admin Panel</span></div>
+  <div class="sidebar-label">Main</div>
+  <nav class="sidebar-nav">
+    <a href="/admin_dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="/manage_volunteers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Volunteers</a>
+    <a href="/programs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Programs</a>
+    <a href="/attendance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Attendance</a>
+    <a href="/reports"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Reports</a>
+  </nav>
+  <div class="sidebar-label">Manage</div>
+  <nav class="sidebar-nav">
+    <a href="/create_program" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Create Program</a>
+    <a href="/certificates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Certificates</a>
+    <a href="/feedback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Feedback</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">AD</div>
+      <div><div class="sidebar-user-name">Admin</div><div class="sidebar-user-role">Administrator</div></div>
+    </div>
+    <a href="/logout" class="sidebar-logout">Sign out</a>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Create Program</div>
+    <div class="topbar-right">
+      <a href="/admin_dashboard" style="font-size:13px;color:var(--subtle);text-decoration:none;">← Dashboard</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="form-wrap">
+
+      <div class="page-header">
+        <h1>New Program</h1>
+        <p>Fill in the details to create a new volunteer program.</p>
+      </div>
+
+      <div class="form-card">
+        <form action="/add_program" method="POST">
+
+          <!-- Basic Info -->
+          <div class="form-section">
+            <div class="form-section-title">Basic information</div>
+            <div class="form-group">
+              <label for="name">Program name</label>
+              <input type="text" id="name" name="name" placeholder="e.g. Community Outreach 2026" required/>
+            </div>
+            <div class="form-group">
+              <label for="description">Description <span class="optional">optional</span></label>
+              <textarea id="description" name="description" placeholder="What will volunteers be doing?" maxlength="300" oninput="updateCount(this)"></textarea>
+              <div class="char-count"><span id="desc-count">0</span> / 300</div>
+            </div>
+          </div>
+
+          <!-- Schedule -->
+          <div class="form-section">
+            <div class="form-section-title">Schedule</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="date">Start date</label>
+                <input type="date" id="date" name="date" required/>
+              </div>
+              <div class="form-group">
+                <label for="end_date">End date <span class="optional">optional</span></label>
+                <input type="date" id="end_date" name="end_date"/>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="time_start">Start time <span class="optional">optional</span></label>
+                <input type="time" id="time_start" name="time_start"/>
+              </div>
+              <div class="form-group">
+                <label for="time_end">End time <span class="optional">optional</span></label>
+                <input type="time" id="time_end" name="time_end"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- Location & Capacity -->
+          <div class="form-section">
+            <div class="form-section-title">Location & capacity</div>
+            <div class="form-group">
+              <label for="location">Location</label>
+              <input type="text" id="location" name="location" placeholder="e.g. City Hall, Room 3B" required/>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="max">Max volunteers</label>
+                <input type="number" id="max" name="max" placeholder="e.g. 30" min="1"/>
+              </div>
+              <div class="form-group">
+                <label for="category">Category <span class="optional">optional</span></label>
+                <div class="select-wrap">
+                  <select id="category" name="category">
+                    <option value="">Select a category</option>
+                    <option value="community">Community</option>
+                    <option value="education">Education</option>
+                    <option value="environment">Environment</option>
+                    <option value="health">Health</option>
+                    <option value="food">Food & Hunger</option>
+                    <option value="seniors">Senior Care</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <a href="/admin_dashboard" class="btn-cancel">Cancel</a>
+            <button type="submit" class="btn-submit">Create program</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function updateCount(el) {
+    document.getElementById('desc-count').textContent = el.value.length;
+  }
+</script>
+
+</body>
+</html>

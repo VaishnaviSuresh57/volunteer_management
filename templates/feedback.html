@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Feedback — VolunteerMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy: #0f1f3d;
+      --blue: #1d4ed8;
+      --blue-hover: #1e40af;
+      --blue-light: #eff6ff;
+      --green: #16a34a;
+      --ink: #111827;
+      --body: #374151;
+      --subtle: #6b7280;
+      --rule: #e5e7eb;
+      --surface: #f9fafb;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--surface);
+      color: var(--body);
+      -webkit-font-smoothing: antialiased;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar { background: var(--navy); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sidebar-logo { padding: 22px 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-logo a { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: white; text-decoration: none; letter-spacing: -0.02em; }
+    .sidebar-logo a span { color: #60a5fa; }
+    .sidebar-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); padding: 20px 24px 8px; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
+    .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55); text-decoration: none; transition: background 0.15s, color 0.15s; }
+    .sidebar-nav a:hover { background: rgba(255,255,255,0.07); color: white; }
+    .sidebar-nav a.active { background: rgba(255,255,255,0.1); color: white; font-weight: 600; }
+    .sidebar-nav a svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
+    .sidebar-nav a.active svg, .sidebar-nav a:hover svg { opacity: 1; }
+    .sidebar-bottom { margin-top: auto; padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-user { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
+    .sidebar-avatar { width: 30px; height: 30px; border-radius: 50%; background: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
+    .sidebar-user-name { font-size: 13px; font-weight: 600; color: white; line-height: 1.2; }
+    .sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.35); }
+    .sidebar-logout { display: block; margin-top: 4px; padding: 8px 12px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.4); text-decoration: none; border-radius: 6px; transition: background 0.15s, color 0.15s; }
+    .sidebar-logout:hover { background: rgba(239,68,68,0.12); color: #fca5a5; }
+
+    .main { display: flex; flex-direction: column; min-height: 100vh; }
+    .topbar { background: white; border-bottom: 1px solid var(--rule); padding: 0 36px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+    .content { padding: 40px 36px; flex: 1; display: flex; justify-content: center; }
+
+    .form-wrap { width: 100%; max-width: 520px; }
+
+    .page-header { margin-bottom: 28px; }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+    .page-header p { font-size: 13px; color: var(--subtle); margin-top: 4px; }
+
+    .form-card { background: white; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+
+    .form-section { padding: 24px 28px; border-bottom: 1px solid var(--rule); }
+    .form-section:last-of-type { border-bottom: none; }
+    .form-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--subtle); margin-bottom: 18px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group:last-child { margin-bottom: 0; }
+
+    label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+    .optional { font-size: 11px; font-weight: 400; color: var(--subtle); margin-left: 4px; }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: white;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      appearance: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(29,78,216,0.08);
+    }
+
+    input::placeholder, textarea::placeholder { color: #d1d5db; }
+    textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+
+    .select-wrap { position: relative; }
+    .select-wrap::after { content: ''; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--subtle); pointer-events: none; }
+    .select-wrap select { padding-right: 30px; }
+
+    /* star rating */
+    .star-group { display: flex; gap: 6px; flex-direction: row-reverse; justify-content: flex-end; }
+    .star-group input { display: none; }
+    .star-group label {
+      font-size: 28px;
+      color: #d1d5db;
+      cursor: pointer;
+      transition: color 0.15s;
+      margin: 0;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .star-group input:checked ~ label,
+    .star-group label:hover,
+    .star-group label:hover ~ label { color: #f59e0b; }
+
+    .rating-hint { font-size: 12px; color: var(--subtle); margin-top: 6px; }
+
+    .char-count { font-size: 11px; color: var(--subtle); text-align: right; margin-top: 4px; }
+
+    .form-footer { padding: 20px 28px; background: var(--surface); border-top: 1px solid var(--rule); display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+
+    .btn-cancel { padding: 10px 20px; background: white; color: var(--body); border: 1px solid var(--rule); border-radius: 6px; font-family: 'Instrument Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; transition: border-color 0.15s; }
+    .btn-cancel:hover { border-color: #9ca3af; }
+
+    .btn-submit { padding: 10px 24px; background: var(--blue); color: white; border: none; border-radius: 6px; font-family: 'Instrument Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .btn-submit:hover { background: var(--blue-hover); }
+
+    /* success state */
+    .success-banner { display: none; background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; }
+    .success-banner.visible { display: flex; align-items: center; gap: 10px; }
+    .success-banner p { font-size: 14px; font-weight: 600; color: var(--green); }
+
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .content { padding: 24px 20px; }
+      .topbar { padding: 0 20px; }
+      .form-section { padding: 20px; }
+      .form-footer { padding: 16px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo"><a href="/">Volunteer<span>MS</span></a>
+      <span style="display:inline-block;margin-top:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;background:#16a34a;color:white;padding:2px 8px;border-radius:3px;">Volunteer Portal</span></div>
+  <div class="sidebar-label">My Space</div>
+  <nav class="sidebar-nav">
+    <a href="/volunteer_dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="/programs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Programs</a>
+    <a href="/attendance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>My Attendance</a>
+    <a href="/activity_history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Activity History</a>
+  </nav>
+  <div class="sidebar-label">Rewards</div>
+  <nav class="sidebar-nav">
+    <a href="/certificates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Certificates</a>
+    <a href="/feedback" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Feedback</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">SJ</div>
+      <div><div class="sidebar-user-name">Sarah Johnson</div><div class="sidebar-user-role">Volunteer</div></div>
+    </div>
+    <a href="/logout" class="sidebar-logout">Sign out</a>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Feedback</div>
+    <div class="topbar-right">
+      <a href="/volunteer_dashboard" style="font-size:13px;color:var(--subtle);text-decoration:none;">← Dashboard</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="form-wrap">
+
+      <div class="page-header">
+        <h1>Program Feedback</h1>
+        <p>Share your experience to help us improve our programs.</p>
+      </div>
+
+      <div class="success-banner" id="success-banner">
+        <p>Your feedback has been submitted. Thank you!</p>
+      </div>
+
+      <div class="form-card">
+        <form action="/feedback" method="POST" id="feedback-form">
+
+          <div class="form-section">
+            <div class="form-section-title">Program</div>
+            <div class="form-group">
+              <label for="program">Select program</label>
+              <div class="select-wrap">
+                <select id="program" name="program" required>
+                  <option value="">Choose a program</option>
+                  <option value="1">Community Outreach</option>
+                  <option value="2">Youth Mentorship</option>
+                  <option value="3">Food Drive 2026</option>
+                  <option value="4">Senior Care Support</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Rating</div>
+            <div class="form-group">
+              <label>How would you rate this program?</label>
+              <div class="star-group">
+                <input type="radio" name="rating" id="s5" value="5"/><label for="s5">&#9733;</label>
+                <input type="radio" name="rating" id="s4" value="4"/><label for="s4">&#9733;</label>
+                <input type="radio" name="rating" id="s3" value="3"/><label for="s3">&#9733;</label>
+                <input type="radio" name="rating" id="s2" value="2"/><label for="s2">&#9733;</label>
+                <input type="radio" name="rating" id="s1" value="1"/><label for="s1">&#9733;</label>
+              </div>
+              <div class="rating-hint" id="rating-hint">Click a star to rate</div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Comments</div>
+            <div class="form-group">
+              <label for="comment">Your feedback <span class="optional">optional</span></label>
+              <textarea id="comment" name="comment" placeholder="What went well? What could be improved?" maxlength="500" oninput="updateCount(this)"></textarea>
+              <div class="char-count"><span id="comment-count">0</span> / 500</div>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <a href="/volunteer_dashboard" class="btn-cancel">Cancel</a>
+            <button type="submit" class="btn-submit">Submit feedback</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const hints = ['', 'Poor', 'Fair', 'Good', 'Very good', 'Excellent'];
+  document.querySelectorAll('.star-group input').forEach(input => {
+    input.addEventListener('change', () => {
+      document.getElementById('rating-hint').textContent = hints[input.value] || '';
+    });
+  });
+
+  function updateCount(el) {
+    document.getElementById('comment-count').textContent = el.value.length;
+  }
+</script>
+
+</body>
+</html>

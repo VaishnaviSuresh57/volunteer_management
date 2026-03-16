@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Programs — VolunteerMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy: #0f1f3d;
+      --blue: #1d4ed8;
+      --blue-hover: #1e40af;
+      --blue-light: #eff6ff;
+      --green: #16a34a;
+      --green-light: #dcfce7;
+      --amber: #b45309;
+      --amber-light: #fef3c7;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --ink: #111827;
+      --body: #374151;
+      --subtle: #6b7280;
+      --rule: #e5e7eb;
+      --surface: #f9fafb;
+      --white: #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--surface);
+      color: var(--body);
+      -webkit-font-smoothing: antialiased;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar { background: var(--navy); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sidebar-logo { padding: 22px 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-logo a { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: white; text-decoration: none; letter-spacing: -0.02em; }
+    .sidebar-logo a span { color: #60a5fa; }
+    .sidebar-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); padding: 20px 24px 8px; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
+    .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55); text-decoration: none; transition: background 0.15s, color 0.15s; }
+    .sidebar-nav a:hover { background: rgba(255,255,255,0.07); color: white; }
+    .sidebar-nav a.active { background: rgba(255,255,255,0.1); color: white; font-weight: 600; }
+    .sidebar-nav a svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
+    .sidebar-nav a.active svg, .sidebar-nav a:hover svg { opacity: 1; }
+    .sidebar-bottom { margin-top: auto; padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-user { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
+    .sidebar-avatar { width: 30px; height: 30px; border-radius: 50%; background: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
+    .sidebar-user-name { font-size: 13px; font-weight: 600; color: white; line-height: 1.2; }
+    .sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.35); }
+    .sidebar-logout { display: block; margin-top: 4px; padding: 8px 12px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.4); text-decoration: none; border-radius: 6px; transition: background 0.15s, color 0.15s; }
+    .sidebar-logout:hover { background: rgba(239,68,68,0.12); color: #fca5a5; }
+
+    .main { display: flex; flex-direction: column; min-height: 100vh; }
+    .topbar { background: white; border-bottom: 1px solid var(--rule); padding: 0 36px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+    .content { padding: 32px 36px; flex: 1; }
+
+    .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+    .page-header p { font-size: 13px; color: var(--subtle); margin-top: 3px; }
+
+    /* view toggle */
+    .view-toggle { display: flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+    .view-btn { padding: 7px 14px; font-size: 12px; font-weight: 600; font-family: 'Instrument Sans', sans-serif; border: none; background: white; color: var(--subtle); cursor: pointer; transition: background 0.15s, color 0.15s; }
+    .view-btn.active { background: var(--blue); color: white; }
+    .view-btn:not(.active):hover { background: var(--surface); color: var(--ink); }
+
+    .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+
+    .search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 320px; }
+    .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--subtle); pointer-events: none; }
+    .search-input { width: 100%; padding: 9px 14px 9px 36px; border: 1px solid var(--rule); border-radius: 6px; font-family: 'Instrument Sans', sans-serif; font-size: 13px; color: var(--ink); background: white; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+    .search-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(29,78,216,0.08); }
+    .search-input::placeholder { color: #d1d5db; }
+
+    .filter-select { padding: 9px 30px 9px 12px; border: 1px solid var(--rule); border-radius: 6px; font-family: 'Instrument Sans', sans-serif; font-size: 13px; color: var(--body); background: white; outline: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; cursor: pointer; }
+    .filter-select:focus { border-color: var(--blue); outline: none; }
+
+    .results-count { font-size: 13px; color: var(--subtle); margin-left: auto; }
+
+    .table-card { background: white; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead th { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--subtle); padding: 11px 20px; text-align: left; border-bottom: 1px solid var(--rule); background: var(--surface); white-space: nowrap; }
+    th.th-center, td.td-center { text-align: center; }
+    tbody tr { border-bottom: 1px solid var(--rule); transition: background 0.12s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fafbff; }
+    tbody td { padding: 14px 20px; font-size: 13px; color: var(--body); vertical-align: middle; }
+
+    .td-program-name { font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+    .td-program-desc { font-size: 12px; color: var(--subtle); margin-top: 2px; max-width: 280px; }
+    .td-muted { color: var(--subtle); }
+
+    .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 4px; }
+    .badge-green { background: var(--green-light); color: var(--green); }
+    .badge-blue  { background: var(--blue-light);  color: var(--blue); }
+    .badge-amber { background: var(--amber-light); color: var(--amber); }
+
+    /* ── CALENDAR ── */
+    .calendar-view { display: none; }
+    .calendar-view.active { display: block; }
+    .table-view { display: block; }
+    .table-view.hidden { display: none; }
+
+    .calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .cal-nav { display: flex; align-items: center; gap: 12px; }
+    .cal-nav-btn { background: white; border: 1px solid var(--rule); border-radius: 6px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; transition: background 0.15s; color: var(--body); }
+    .cal-nav-btn:hover { background: var(--surface); }
+    .cal-month { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--ink); }
+
+    .calendar-grid { background: white; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+    .cal-day-headers { display: grid; grid-template-columns: repeat(7, 1fr); border-bottom: 1px solid var(--rule); }
+    .cal-day-header { padding: 10px 8px; text-align: center; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--subtle); background: var(--surface); }
+    .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .cal-day { min-height: 90px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 8px; position: relative; }
+    .cal-day:nth-child(7n) { border-right: none; }
+    .cal-day.other-month { background: #fafafa; }
+    .cal-day.today { background: #eff6ff; }
+    .cal-day-num { font-size: 12px; font-weight: 600; color: var(--subtle); margin-bottom: 4px; }
+    .cal-day.today .cal-day-num { color: var(--blue); font-weight: 800; }
+    .cal-event { background: var(--blue-light); color: var(--blue); font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 3px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; border-left: 2px solid var(--blue); }
+    .badge-red   { background: var(--red-light);   color: var(--red); }
+
+    .cap-bar { width: 60px; height: 4px; background: var(--rule); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+    .cap-fill { height: 100%; border-radius: 2px; background: var(--blue); }
+    .cap-fill.warn { background: var(--red); }
+    .capacity-wrap { display: flex; align-items: center; gap: 8px; justify-content: center; }
+    .cap-text { font-size: 12px; color: var(--subtle); white-space: nowrap; }
+
+    .btn-enroll { display: inline-block; padding: 7px 16px; background: var(--blue); color: white; font-family: 'Instrument Sans', sans-serif; font-size: 12px; font-weight: 600; border-radius: 5px; text-decoration: none; transition: background 0.15s; white-space: nowrap; }
+    .btn-enroll:hover { background: var(--blue-hover); }
+    .btn-enrolled { display: inline-block; padding: 7px 16px; background: var(--green-light); color: var(--green); font-family: 'Instrument Sans', sans-serif; font-size: 12px; font-weight: 600; border-radius: 5px; white-space: nowrap; }
+    .btn-full { display: inline-block; padding: 7px 16px; background: var(--surface); color: var(--subtle); font-family: 'Instrument Sans', sans-serif; font-size: 12px; font-weight: 600; border-radius: 5px; border: 1px solid var(--rule); white-space: nowrap; cursor: not-allowed; }
+
+    .empty-state { text-align: center; padding: 60px 20px; }
+    .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--ink); }
+    .empty-state p { font-size: 14px; color: var(--subtle); margin-top: 6px; }
+
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .content { padding: 20px; }
+      .topbar { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo"><a href="/">Volunteer<span>MS</span></a>
+      <span style="display:inline-block;margin-top:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;background:#16a34a;color:white;padding:2px 8px;border-radius:3px;">Volunteer Portal</span></div>
+  <div class="sidebar-label">My Space</div>
+  <nav class="sidebar-nav">
+    <a href="/volunteer_dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="/programs" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Programs</a>
+    <a href="/attendance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>My Attendance</a>
+    <a href="/activity_history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Activity History</a>
+  </nav>
+  <div class="sidebar-label">Rewards</div>
+  <nav class="sidebar-nav">
+    <a href="/certificates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Certificates</a>
+    <a href="/feedback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Feedback</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">V</div>
+      <div>
+        <div class="sidebar-user-name">{{ session.get('volunteer_name', 'Volunteer') }}</div>
+        <div class="sidebar-user-role">Volunteer</div>
+      </div>
+    </div>
+    <a href="/logout" class="sidebar-logout">Sign out</a>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Programs</div>
+    <div class="topbar-right">
+      <a href="/volunteer_dashboard" style="font-size:13px;color:var(--subtle);text-decoration:none;">← Dashboard</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <div>
+        <h1>Available Programs</h1>
+        <p>Browse and enroll in volunteer programs running in your area.</p>
+      </div>
+      <div class="view-toggle">
+        <button class="view-btn active" id="btn-table" onclick="switchView('table')">List</button>
+        <button class="view-btn" id="btn-calendar" onclick="switchView('calendar')">Calendar</button>
+      </div>
+    </div>
+
+    <div class="filter-bar" id="filter-bar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="search-input" placeholder="Search programs..." oninput="filterTable()"/>
+      </div>
+      <span class="results-count" id="results-count"></span>
+    </div>
+
+    <!-- TABLE VIEW -->
+    <div class="table-view" id="table-view">
+      <div class="table-card">
+        <table id="programs-table">
+          <thead>
+            <tr>
+              <th>Program</th>
+              <th>Date</th>
+              <th>Location</th>
+              <th class="th-center">Capacity</th>
+              <th class="th-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="programs-tbody">
+            {% for p in programs %}
+            {% set enrolled_count = enrollment_counts.get(p[0], 0) %}
+            {% set is_full = p[8] and enrolled_count >= p[8] %}
+            {% set is_enrolled = p[0] in enrolled_ids %}
+            <tr>
+              <td>
+                <div class="td-program-name">{{ p[1] }}</div>
+                {% if p[4] %}<div class="td-program-desc">{{ p[4] }}</div>{% endif %}
+              </td>
+              <td class="td-muted">{{ p[2] }}</td>
+              <td class="td-muted">{{ p[3] }}</td>
+              <td class="td-center">
+                {% if p[8] %}
+                  {% set pct = (enrolled_count / p[8] * 100) | int %}
+                  <div class="capacity-wrap">
+                    <div class="cap-bar">
+                      <div class="cap-fill {% if pct >= 90 %}warn{% endif %}" style="width:{{ pct }}%"></div>
+                    </div>
+                    <span class="cap-text">{{ enrolled_count }} / {{ p[8] }}</span>
+                  </div>
+                {% else %}
+                  <span class="td-muted">Open</span>
+                {% endif %}
+              </td>
+              <td class="td-center">
+                {% if is_enrolled %}
+                  <span class="btn-enrolled">Enrolled</span>
+                {% elif is_full %}
+                  <span class="btn-full">Full</span>
+                {% else %}
+                  <a href="/enroll/{{ p[0] }}" class="btn-enroll">Enroll</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div class="empty-state" id="empty-state" style="display:none;">
+          <h3>No programs found</h3>
+          <p>Try adjusting your search.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDAR VIEW -->
+    <div class="calendar-view" id="calendar-view">
+      <div class="calendar-header">
+        <div class="cal-nav">
+          <button class="cal-nav-btn" onclick="changeMonth(-1)">&#8249;</button>
+          <span class="cal-month" id="cal-month-label"></span>
+          <button class="cal-nav-btn" onclick="changeMonth(1)">&#8250;</button>
+        </div>
+      </div>
+      <div class="calendar-grid">
+        <div class="cal-day-headers">
+          <div class="cal-day-header">Sun</div>
+          <div class="cal-day-header">Mon</div>
+          <div class="cal-day-header">Tue</div>
+          <div class="cal-day-header">Wed</div>
+          <div class="cal-day-header">Thu</div>
+          <div class="cal-day-header">Fri</div>
+          <div class="cal-day-header">Sat</div>
+        </div>
+        <div class="cal-days" id="cal-days"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── program data from Jinja ──
+  const programs = [
+    {% for p in programs %}
+    { name: {{ p[1]|tojson }}, date: {{ p[2]|string|tojson }}, location: {{ p[3]|tojson }} },
+    {% endfor %}
+  ];
+
+  // ── view toggle ──
+  function switchView(view) {
+    const tableView = document.getElementById('table-view');
+    const calView   = document.getElementById('calendar-view');
+    const filterBar = document.getElementById('filter-bar');
+    const btnTable  = document.getElementById('btn-table');
+    const btnCal    = document.getElementById('btn-calendar');
+
+    if (view === 'table') {
+      tableView.classList.remove('hidden');
+      calView.classList.remove('active');
+      filterBar.style.display = 'flex';
+      btnTable.classList.add('active');
+      btnCal.classList.remove('active');
+    } else {
+      tableView.classList.add('hidden');
+      calView.classList.add('active');
+      filterBar.style.display = 'none';
+      btnCal.classList.add('active');
+      btnTable.classList.remove('active');
+      renderCalendar();
+    }
+  }
+
+  // ── table filter ──
+  function filterTable() {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const rows  = document.querySelectorAll('#programs-tbody tr');
+    let visible = 0;
+    rows.forEach(row => {
+      const match = row.textContent.toLowerCase().includes(query);
+      row.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    document.getElementById('results-count').textContent = visible + ' program' + (visible !== 1 ? 's' : '');
+    document.getElementById('empty-state').style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  // ── calendar ──
+  let calYear  = new Date().getFullYear();
+  let calMonth = new Date().getMonth();
+
+  const monthNames = ['January','February','March','April','May','June',
+                      'July','August','September','October','November','December'];
+
+  function changeMonth(dir) {
+    calMonth += dir;
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+    if (calMonth < 0)  { calMonth = 11; calYear--; }
+    renderCalendar();
+  }
+
+  function renderCalendar() {
+    document.getElementById('cal-month-label').textContent = monthNames[calMonth] + ' ' + calYear;
+    const container = document.getElementById('cal-days');
+    container.innerHTML = '';
+
+    const firstDay  = new Date(calYear, calMonth, 1).getDay();
+    const daysTotal = new Date(calYear, calMonth + 1, 0).getDate();
+    const prevDays  = new Date(calYear, calMonth, 0).getDate();
+    const today     = new Date();
+
+    // prev month filler
+    for (let i = firstDay - 1; i >= 0; i--) {
+      const d = document.createElement('div');
+      d.className = 'cal-day other-month';
+      d.innerHTML = '<div class="cal-day-num">' + (prevDays - i) + '</div>';
+      container.appendChild(d);
+    }
+
+    // current month days
+    for (let day = 1; day <= daysTotal; day++) {
+      const d = document.createElement('div');
+      const isToday = today.getFullYear() === calYear && today.getMonth() === calMonth && today.getDate() === day;
+      d.className = 'cal-day' + (isToday ? ' today' : '');
+      d.innerHTML = '<div class="cal-day-num">' + day + '</div>';
+
+      // add program events
+      programs.forEach(p => {
+        if (!p.date) return;
+        const pd = new Date(p.date);
+        if (pd.getFullYear() === calYear && pd.getMonth() === calMonth && pd.getDate() === day) {
+          const ev = document.createElement('div');
+          ev.className = 'cal-event';
+          ev.textContent = p.name;
+          ev.title = p.name + (p.location ? ' · ' + p.location : '');
+          d.appendChild(ev);
+        }
+      });
+
+      container.appendChild(d);
+    }
+
+    // next month filler
+    const totalCells = firstDay + daysTotal;
+    const remaining  = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+    for (let i = 1; i <= remaining; i++) {
+      const d = document.createElement('div');
+      d.className = 'cal-day other-month';
+      d.innerHTML = '<div class="cal-day-num">' + i + '</div>';
+      container.appendChild(d);
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const rows = document.querySelectorAll('#programs-tbody tr').length;
+    document.getElementById('results-count').textContent = rows + ' program' + (rows !== 1 ? 's' : '');
+    document.getElementById('cal-month-label').textContent = monthNames[calMonth] + ' ' + calYear;
+  });
+</script>
+
+</body>
+</html>
